@@ -5,6 +5,7 @@ library(ggplot2)
 library(tidyr)
 library(reshape2)
 library(caret)
+library(readr)
 
 api_key <- as.character(read.csv("code/NASS_API_key.csv", header = F)[1,1])       # api key
 # Specify the range of years across which you want to collect data
@@ -22,7 +23,7 @@ d <- plyr::ldply(years, function(x){
     util_practice_desc = "GRAIN",
     year = x,
     agg_level_desc = "COUNTY", 
-    source = "SURVEY",
+    source_desc = "SURVEY",
     domain_desc = "TOTAL"
   )
   
@@ -178,7 +179,7 @@ mod <- function(df){
 
 d_list <- split(d, f = d$GEOID)
 
-d_list <- mclapply(X = d_list,FUN = mod, mc.cores = 40)
+d_list <- mclapply(X = d_list,FUN = mod, mc.cores = 4)
 
 d <- dplyr::bind_rows(d_list)
 
